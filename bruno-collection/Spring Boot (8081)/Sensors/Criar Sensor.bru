@@ -1,0 +1,24 @@
+meta {
+  name: Criar Sensor
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8081/api/sensors
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "id": "sensor-1",
+    "apiKey": "chave-mestra-tcc",
+    "name": "Sensor Teste",
+    "location": "Recife"
+  }
+}

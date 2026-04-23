@@ -1,0 +1,24 @@
+meta {
+  name: Registrar Telemetria
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8081/api/telemetry
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "sensorId": "sensor-1",
+    "apiKey": "chave-mestra-tcc",
+    "value": 25.5,
+    "unit": "celsius"
+  }
+}

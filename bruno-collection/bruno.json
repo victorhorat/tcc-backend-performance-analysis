@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "TCC - Comparativo de Performance",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

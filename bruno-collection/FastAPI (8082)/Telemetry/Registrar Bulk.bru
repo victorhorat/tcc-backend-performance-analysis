@@ -1,0 +1,38 @@
+meta {
+  name: Registrar Bulk
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8082/api/telemetry/bulk
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  [
+    {
+      "sensor_id": "sensor-1",
+      "api_key": "chave-mestra-tcc",
+      "value": 25.5,
+      "unit": "celsius"
+    },
+    {
+      "sensor_id": "sensor-2",
+      "api_key": "chave-mestra-tcc",
+      "value": 3.7,
+      "unit": "v"
+    },
+    {
+      "sensor_id": "sensor-3",
+      "api_key": "chave-mestra-tcc",
+      "value": 82.0,
+      "unit": "%"
+    }
+  ]
+}
