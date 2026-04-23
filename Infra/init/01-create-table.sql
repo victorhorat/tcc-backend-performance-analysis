@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS sensors (
+    id VARCHAR(50) PRIMARY KEY,
+    api_key VARCHAR(100) NOT NULL,
+    name VARCHAR(100),
+    location VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS telemetry (
+    id SERIAL PRIMARY KEY,
+    sensor_id VARCHAR(50) NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    unit VARCHAR(20) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_sensor FOREIGN KEY(sensor_id) REFERENCES sensors(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_sensor_id ON telemetry(sensor_id);
