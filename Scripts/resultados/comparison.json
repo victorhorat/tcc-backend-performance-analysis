@@ -1,0 +1,773 @@
+{
+  "nest": {
+    "load": {
+      "avg_ms": 8,
+      "min_ms": 1,
+      "med_ms": 6,
+      "max_ms": 106,
+      "p90_ms": 14,
+      "p95_ms": 20,
+      "p95_std_ms": 1.4,
+      "total_reqs": 83072,
+      "rps": 691.9,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 8,
+          "min_ms": 1,
+          "med_ms": 6,
+          "max_ms": 116,
+          "p90_ms": 14,
+          "p95_ms": 21,
+          "total_reqs": 83070,
+          "rps": 691.79,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 8,
+          "min_ms": 1,
+          "med_ms": 6,
+          "max_ms": 100,
+          "p90_ms": 14,
+          "p95_ms": 21,
+          "total_reqs": 82907,
+          "rps": 690.64,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 8,
+          "min_ms": 1,
+          "med_ms": 6,
+          "max_ms": 102,
+          "p90_ms": 13,
+          "p95_ms": 18,
+          "total_reqs": 83240,
+          "rps": 693.27,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "stress": {
+      "avg_ms": 400,
+      "min_ms": 1,
+      "med_ms": 361,
+      "max_ms": 1346,
+      "p90_ms": 852,
+      "p95_ms": 927,
+      "p95_std_ms": 24.5,
+      "total_reqs": 213754,
+      "rps": 890.52,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 395,
+          "min_ms": 1,
+          "med_ms": 363,
+          "max_ms": 1614,
+          "p90_ms": 833,
+          "p95_ms": 897,
+          "total_reqs": 215902,
+          "rps": 899.5,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 409,
+          "min_ms": 1,
+          "med_ms": 376,
+          "max_ms": 1333,
+          "p90_ms": 860,
+          "p95_ms": 957,
+          "total_reqs": 209707,
+          "rps": 873.69,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 396,
+          "min_ms": 1,
+          "med_ms": 343,
+          "max_ms": 1092,
+          "p90_ms": 863,
+          "p95_ms": 926,
+          "total_reqs": 215653,
+          "rps": 898.37,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "spike": {
+      "avg_ms": 1150,
+      "min_ms": 1,
+      "med_ms": 1354,
+      "max_ms": 1867,
+      "p90_ms": 1503,
+      "p95_ms": 1579,
+      "p95_std_ms": 34.9,
+      "total_reqs": 48562,
+      "rps": 808.29,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 1145,
+          "min_ms": 1,
+          "med_ms": 1346,
+          "max_ms": 1970,
+          "p90_ms": 1501,
+          "p95_ms": 1624,
+          "total_reqs": 48796,
+          "rps": 812.28,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1162,
+          "min_ms": 1,
+          "med_ms": 1366,
+          "max_ms": 1874,
+          "p90_ms": 1503,
+          "p95_ms": 1573,
+          "total_reqs": 48085,
+          "rps": 800.29,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1143,
+          "min_ms": 1,
+          "med_ms": 1351,
+          "max_ms": 1758,
+          "p90_ms": 1505,
+          "p95_ms": 1539,
+          "total_reqs": 48806,
+          "rps": 812.31,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "read": {
+      "avg_ms": 2493,
+      "min_ms": 47,
+      "med_ms": 3152,
+      "max_ms": 6128,
+      "p90_ms": 3327,
+      "p95_ms": 3374,
+      "p95_std_ms": 6.9,
+      "total_reqs": 3504,
+      "rps": 29.18,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 2474,
+          "min_ms": 49,
+          "med_ms": 3143,
+          "max_ms": 5927,
+          "p90_ms": 3306,
+          "p95_ms": 3365,
+          "total_reqs": 3530,
+          "rps": 29.39,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 2493,
+          "min_ms": 45,
+          "med_ms": 3157,
+          "max_ms": 6429,
+          "p90_ms": 3326,
+          "p95_ms": 3374,
+          "total_reqs": 3503,
+          "rps": 29.16,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 2513,
+          "min_ms": 47,
+          "med_ms": 3157,
+          "max_ms": 6029,
+          "p90_ms": 3348,
+          "p95_ms": 3382,
+          "total_reqs": 3478,
+          "rps": 28.98,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "average": {
+      "avg_ms": 653,
+      "min_ms": 28,
+      "med_ms": 807,
+      "max_ms": 1155,
+      "p90_ms": 931,
+      "p95_ms": 964,
+      "p95_std_ms": 14.2,
+      "total_reqs": 8477,
+      "rps": 70.59,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 644,
+          "min_ms": 29,
+          "med_ms": 799,
+          "max_ms": 1117,
+          "p90_ms": 913,
+          "p95_ms": 944,
+          "total_reqs": 8575,
+          "rps": 71.4,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 656,
+          "min_ms": 28,
+          "med_ms": 809,
+          "max_ms": 1152,
+          "p90_ms": 942,
+          "p95_ms": 975,
+          "total_reqs": 8444,
+          "rps": 70.34,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 660,
+          "min_ms": 28,
+          "med_ms": 812,
+          "max_ms": 1196,
+          "p90_ms": 938,
+          "p95_ms": 973,
+          "total_reqs": 8412,
+          "rps": 70.04,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "_resources": {
+      "avgCpu": 5.6,
+      "maxCpu": 11,
+      "avgMem": 552,
+      "maxMem": 673.8,
+      "avgThreads": 39,
+      "samples": 769
+    }
+  },
+  "fastapi": {
+    "load": {
+      "avg_ms": 419,
+      "min_ms": 6,
+      "med_ms": 208,
+      "max_ms": 1661,
+      "p90_ms": 1181,
+      "p95_ms": 1361,
+      "p95_std_ms": 6.9,
+      "total_reqs": 17384,
+      "rps": 144.76,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 413,
+          "min_ms": 6,
+          "med_ms": 186,
+          "max_ms": 1581,
+          "p90_ms": 1199,
+          "p95_ms": 1361,
+          "total_reqs": 17597,
+          "rps": 146.53,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 433,
+          "min_ms": 5,
+          "med_ms": 230,
+          "max_ms": 1754,
+          "p90_ms": 1185,
+          "p95_ms": 1370,
+          "total_reqs": 16926,
+          "rps": 140.97,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 412,
+          "min_ms": 6,
+          "med_ms": 207,
+          "max_ms": 1649,
+          "p90_ms": 1158,
+          "p95_ms": 1353,
+          "total_reqs": 17628,
+          "rps": 146.79,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "stress": {
+      "avg_ms": 1299,
+      "min_ms": 6,
+      "med_ms": 930,
+      "max_ms": 17606,
+      "p90_ms": 2824,
+      "p95_ms": 3959,
+      "p95_std_ms": 301,
+      "total_reqs": 72119,
+      "rps": 300.48,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 1258,
+          "min_ms": 6,
+          "med_ms": 920,
+          "max_ms": 14147,
+          "p90_ms": 2715,
+          "p95_ms": 3752,
+          "total_reqs": 74184,
+          "rps": 309.1,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1383,
+          "min_ms": 6,
+          "med_ms": 939,
+          "max_ms": 21459,
+          "p90_ms": 3023,
+          "p95_ms": 4385,
+          "total_reqs": 67958,
+          "rps": 283.12,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1256,
+          "min_ms": 6,
+          "med_ms": 931,
+          "max_ms": 17212,
+          "p90_ms": 2735,
+          "p95_ms": 3741,
+          "total_reqs": 74214,
+          "rps": 309.22,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "spike": {
+      "avg_ms": 385,
+      "min_ms": 0,
+      "med_ms": 0,
+      "max_ms": 26003,
+      "p90_ms": 380,
+      "p95_ms": 2565,
+      "total_reqs": 128766,
+      "rps": 2143.18,
+      "error_pct": 88.995,
+      "source": "json",
+      "samples": 1
+    },
+    "read": {
+      "avg_ms": 1273,
+      "min_ms": 26,
+      "med_ms": 1542,
+      "max_ms": 3946,
+      "p90_ms": 1775,
+      "p95_ms": 1870,
+      "p95_std_ms": 19,
+      "total_reqs": 6586,
+      "rps": 54.84,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 1275,
+          "min_ms": 26,
+          "med_ms": 1553,
+          "max_ms": 3663,
+          "p90_ms": 1789,
+          "p95_ms": 1895,
+          "total_reqs": 6574,
+          "rps": 54.73,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1273,
+          "min_ms": 26,
+          "med_ms": 1530,
+          "max_ms": 3881,
+          "p90_ms": 1762,
+          "p95_ms": 1866,
+          "total_reqs": 6589,
+          "rps": 54.87,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1271,
+          "min_ms": 26,
+          "med_ms": 1543,
+          "max_ms": 4293,
+          "p90_ms": 1774,
+          "p95_ms": 1849,
+          "total_reqs": 6596,
+          "rps": 54.92,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "average": {
+      "avg_ms": 294,
+      "min_ms": 15,
+      "med_ms": 126,
+      "max_ms": 1526,
+      "p90_ms": 865,
+      "p95_ms": 1123,
+      "p95_std_ms": 51.3,
+      "total_reqs": 14588,
+      "rps": 121.38,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 309,
+          "min_ms": 15,
+          "med_ms": 119,
+          "max_ms": 1601,
+          "p90_ms": 925,
+          "p95_ms": 1167,
+          "total_reqs": 14160,
+          "rps": 117.81,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 290,
+          "min_ms": 15,
+          "med_ms": 128,
+          "max_ms": 1477,
+          "p90_ms": 838,
+          "p95_ms": 1151,
+          "total_reqs": 14709,
+          "rps": 122.36,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 284,
+          "min_ms": 15,
+          "med_ms": 132,
+          "max_ms": 1499,
+          "p90_ms": 833,
+          "p95_ms": 1051,
+          "total_reqs": 14896,
+          "rps": 123.97,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "_resources": {
+      "avgCpu": 6.3,
+      "maxCpu": 8,
+      "avgMem": 145,
+      "maxMem": 208.2,
+      "avgThreads": 7,
+      "samples": 675
+    }
+  },
+  "spring": {
+    "load": {
+      "avg_ms": 11,
+      "min_ms": 3,
+      "med_ms": 7,
+      "max_ms": 242,
+      "p90_ms": 21,
+      "p95_ms": 29,
+      "p95_std_ms": 21.9,
+      "total_reqs": 80869,
+      "rps": 673.56,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 17,
+          "min_ms": 3,
+          "med_ms": 8,
+          "max_ms": 304,
+          "p90_ms": 39,
+          "p95_ms": 60,
+          "total_reqs": 76654,
+          "rps": 638.49,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 9,
+          "min_ms": 3,
+          "med_ms": 7,
+          "max_ms": 368,
+          "p90_ms": 12,
+          "p95_ms": 14,
+          "total_reqs": 82518,
+          "rps": 687.26,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 8,
+          "min_ms": 3,
+          "med_ms": 7,
+          "max_ms": 55,
+          "p90_ms": 11,
+          "p95_ms": 13,
+          "total_reqs": 83434,
+          "rps": 694.93,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "stress": {
+      "avg_ms": 229,
+      "min_ms": 2,
+      "med_ms": 199,
+      "max_ms": 1717,
+      "p90_ms": 492,
+      "p95_ms": 555,
+      "p95_std_ms": 7.3,
+      "total_reqs": 344358,
+      "rps": 1434.64,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 232,
+          "min_ms": 3,
+          "med_ms": 208,
+          "max_ms": 1821,
+          "p90_ms": 485,
+          "p95_ms": 545,
+          "total_reqs": 339813,
+          "rps": 1415.84,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 230,
+          "min_ms": 2,
+          "med_ms": 202,
+          "max_ms": 1675,
+          "p90_ms": 495,
+          "p95_ms": 560,
+          "total_reqs": 342832,
+          "rps": 1428.27,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 224,
+          "min_ms": 2,
+          "med_ms": 188,
+          "max_ms": 1655,
+          "p90_ms": 496,
+          "p95_ms": 561,
+          "total_reqs": 350428,
+          "rps": 1459.81,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "spike": {
+      "avg_ms": 620,
+      "min_ms": 3,
+      "med_ms": 705,
+      "max_ms": 2099,
+      "p90_ms": 872,
+      "p95_ms": 964,
+      "p95_std_ms": 50,
+      "total_reqs": 83985,
+      "rps": 1397.7,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 603,
+          "min_ms": 3,
+          "med_ms": 700,
+          "max_ms": 1997,
+          "p90_ms": 848,
+          "p95_ms": 920,
+          "total_reqs": 85915,
+          "rps": 1430.15,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 644,
+          "min_ms": 3,
+          "med_ms": 716,
+          "max_ms": 2265,
+          "p90_ms": 913,
+          "p95_ms": 1034,
+          "total_reqs": 81203,
+          "rps": 1351.48,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 613,
+          "min_ms": 3,
+          "med_ms": 700,
+          "max_ms": 2035,
+          "p90_ms": 854,
+          "p95_ms": 938,
+          "total_reqs": 84837,
+          "rps": 1411.48,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "read": {
+      "avg_ms": 2222,
+      "min_ms": 73,
+      "med_ms": 2765,
+      "max_ms": 6105,
+      "p90_ms": 3089,
+      "p95_ms": 3184,
+      "p95_std_ms": 146.2,
+      "total_reqs": 3883,
+      "rps": 32.32,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 2179,
+          "min_ms": 74,
+          "med_ms": 2733,
+          "max_ms": 5658,
+          "p90_ms": 2977,
+          "p95_ms": 3033,
+          "total_reqs": 3959,
+          "rps": 32.96,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 2236,
+          "min_ms": 73,
+          "med_ms": 2783,
+          "max_ms": 6146,
+          "p90_ms": 3051,
+          "p95_ms": 3138,
+          "total_reqs": 3858,
+          "rps": 32.11,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 2252,
+          "min_ms": 73,
+          "med_ms": 2780,
+          "max_ms": 6512,
+          "p90_ms": 3239,
+          "p95_ms": 3382,
+          "total_reqs": 3833,
+          "rps": 31.9,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "average": {
+      "avg_ms": 1075,
+      "min_ms": 41,
+      "med_ms": 1318,
+      "max_ms": 3053,
+      "p90_ms": 1524,
+      "p95_ms": 1589,
+      "p95_std_ms": 38.4,
+      "total_reqs": 5680,
+      "rps": 47.29,
+      "error_pct": 0,
+      "samples": 3,
+      "source": "json",
+      "raw_samples": [
+        {
+          "avg_ms": 1070,
+          "min_ms": 39,
+          "med_ms": 1308,
+          "max_ms": 3313,
+          "p90_ms": 1532,
+          "p95_ms": 1608,
+          "total_reqs": 5706,
+          "rps": 47.5,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1068,
+          "min_ms": 42,
+          "med_ms": 1326,
+          "max_ms": 2664,
+          "p90_ms": 1493,
+          "p95_ms": 1535,
+          "total_reqs": 5712,
+          "rps": 47.55,
+          "error_pct": 0,
+          "source": "json"
+        },
+        {
+          "avg_ms": 1088,
+          "min_ms": 41,
+          "med_ms": 1319,
+          "max_ms": 3183,
+          "p90_ms": 1547,
+          "p95_ms": 1623,
+          "total_reqs": 5623,
+          "rps": 46.81,
+          "error_pct": 0,
+          "source": "json"
+        }
+      ]
+    },
+    "_resources": {
+      "avgCpu": 11.7,
+      "maxCpu": 29,
+      "avgMem": 968.6,
+      "maxMem": 1083.4,
+      "avgThreads": 348,
+      "samples": 755
+    }
+  }
+}

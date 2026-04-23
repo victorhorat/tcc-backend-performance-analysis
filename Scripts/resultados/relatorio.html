@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TCC — Comparativo de Performance</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      padding: 2rem;
+    }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+    header h1 { font-size: 1.8rem; font-weight: 700; color: #0f172a; }
+    header p  { color: #64748b; margin-top: .4rem; font-size: .9rem; }
+
+    .grid { display: grid; gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .card h2 {
+      font-size: .85rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 1rem;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .chart-box { position: relative; height: 260px; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    th {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      text-align: left;
+      padding: .6rem .9rem;
+      white-space: nowrap;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    td {
+      padding: .55rem .9rem;
+      border-bottom: 1px solid #f1f5f9;
+      white-space: nowrap;
+      color: #334155;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    .winner-tag {
+      display: inline-block;
+      font-size: .68rem;
+      font-weight: 700;
+      border: 1.5px solid;
+      border-radius: 4px;
+      padding: .1rem .4rem;
+      margin-left: .4rem;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tr.winner-row td:first-child { font-weight: 700; }
+
+    .win-badge {
+      display: inline-block;
+      background: #16a34a;
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 700;
+      padding: .1rem .35rem;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-right: .25rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 4px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    td.best { color: #16a34a; font-weight: 700; }
+    td.good { color: #16a34a; }
+    td.warn { color: #d97706; font-weight: 600; }
+    td.bad  { color: #dc2626; font-weight: 700; }
+    td.na   { color: #94a3b8; font-style: italic; }
+    small   { font-size: .75em; color: #94a3b8; }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .score-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    .score-medal { font-size: 2rem; }
+    .score-name  { font-size: .95rem; font-weight: 700; color: #1e293b; margin: .4rem 0; }
+    .score-pts   { font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1; }
+    .score-total { font-size: .75rem; color: #94a3b8; margin-top: .3rem; margin-bottom: .6rem; }
+    .win-list    { list-style: none; padding: 0; margin: 0; text-align: left; font-size: .75rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: .5rem; }
+    .win-list li::before { content: "✓ "; color: #16a34a; font-weight: 700; }
+    .win-list li { margin-bottom: .2rem; }
+    .win-list-empty { font-size: .75rem; color: #94a3b8; margin-top: .5rem; }
+
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      font-size: .8rem;
+      color: #64748b;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .legend span { display: flex; align-items: center; gap: .4rem; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .rejected-note {
+      background: #fff7ed;
+      border-top: 1px solid #fed7aa;
+      color: #92400e;
+      font-size: .8rem;
+      line-height: 1.6;
+      padding: .6rem .9rem;
+      white-space: normal;
+    }
+
+    .glossary { display: grid; gap: 1rem; }
+    .gl-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.2rem; }
+    .gl-block h3 { font-size: .85rem; font-weight: 700; color: #0f172a; margin-bottom: .5rem; }
+    .gl-block p  { font-size: .875rem; color: #475569; line-height: 1.6; }
+    .gl-block ul { font-size: .875rem; color: #475569; line-height: 1.6; padding-left: 1.2rem; }
+    .gl-block li { margin-bottom: .4rem; }
+
+    @media (max-width: 600px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .score-grid  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Comparativo de Performance — TCC</h1>
+    <p>NestJS &nbsp;·&nbsp; FastAPI &nbsp;·&nbsp; Spring Boot &nbsp;|&nbsp; k6 Load Testing &nbsp;|&nbsp; 3 amostras por teste</p>
+  </header>
+
+  <div class="grid">
+
+    <div class="card"><h2>Placar Final</h2>
+    <p style="font-size:.8rem;color:#64748b;margin-bottom:1rem">
+      Criterios: RPS e P95 por cenario (5 cenarios x 2 = 10 pts) + menor RAM + menor CPU (2 pts) = 12 pts totais.
+    </p>
+    <div class="score-grid">
+    <div class="score-card" style="border-top:4px solid #e0245e">
+      <div class="score-medal">🥇</div>
+      <div class="score-name">NestJS</div>
+      <div class="score-pts">4</div>
+      <div class="score-total">de 12 possiveis</div>
+      <ul class="win-list"><li>RPS Carga</li><li>P95 Carga</li><li>P95 Agregacao</li><li>CPU mais eficiente</li></ul>
+    </div>
+    <div class="score-card" style="border-top:4px solid #009688">
+      <div class="score-medal">🥈</div>
+      <div class="score-name">FastAPI</div>
+      <div class="score-pts">4</div>
+      <div class="score-total">de 12 possiveis</div>
+      <ul class="win-list"><li>RPS Leitura</li><li>P95 Leitura</li><li>RPS Agregacao</li><li>RAM mais leve</li></ul>
+    </div>
+    <div class="score-card" style="border-top:4px solid #6db33f">
+      <div class="score-medal">🥉</div>
+      <div class="score-name">Spring Boot</div>
+      <div class="score-pts">4</div>
+      <div class="score-total">de 12 possiveis</div>
+      <ul class="win-list"><li>RPS Estresse</li><li>P95 Estresse</li><li>RPS Pico</li><li>P95 Pico</li></ul>
+    </div></div></div>
+
+    <!-- Gráficos -->
+    <div class="card">
+      <h2>Throughput (RPS) por Cenário</h2>
+      <div class="chart-box"><canvas id="chartRps"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h2>Latência P95 (ms) por Cenário</h2>
+      <div class="chart-box"><canvas id="chartP95"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h2>Taxa de Erro (%) por Cenário</h2>
+      <div class="chart-box"><canvas id="chartErr"></canvas></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="card">
+        <h2>RAM Média (MB)</h2>
+        <div class="chart-box"><canvas id="chartRam"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>CPU Média (%)</h2>
+        <div class="chart-box"><canvas id="chartCpu"></canvas></div>
+      </div>
+    </div>
+
+    
+    <div class="card">
+      <h2>Glossario de Metricas e Cenarios de Teste</h2>
+      <div class="glossary">
+        <div class="gl-block">
+          <h3>O que e um VU (Virtual User)?</h3>
+          <p>
+            Um <strong>VU (Usuario Virtual)</strong> representa uma pessoa usando a API ao mesmo tempo.
+            Se o teste usa 100 VUs, e como se 100 pessoas estivessem clicando no sistema simultaneamente,
+            cada uma enviando requisicoes de forma continua. Quanto mais VUs, maior a pressao sobre o servidor.
+          </p>
+        </div>
+        <div class="gl-block">
+          <h3>O que e RPS (Requisicoes por Segundo)?</h3>
+          <p>
+            <strong>RPS</strong> mede quantas requisicoes o servidor consegue responder em 1 segundo.
+            E o principal indicador de <em>throughput</em> (capacidade de trabalho). Quanto maior, melhor.
+            Um RPS de 1000 significa que o servidor atendeu 1000 chamadas naquele segundo.
+          </p>
+        </div>
+        <div class="gl-block">
+          <h3>O que sao Avg, Median, P90 e P95?</h3>
+          <p>
+            Todas sao formas de medir latencia (tempo de resposta). Para entender P90 e P95,
+            primeiro e preciso entender o conceito de <strong>percentil</strong>:
+          </p>
+          <p style="margin-top:.5rem">
+            Imagine que voce ordenou todas as 10.000 requisicoes do teste do mais rapido para o mais lento.
+            O <strong>percentil X</strong> e o tempo de resposta da requisicao que esta na posicao X% dessa fila ordenada.
+            Em outras palavras: "X% das requisicoes foram respondidas em menos do que esse tempo."
+            Exemplo: se o P95 e 200ms, significa que 9.500 das 10.000 requisicoes responderam em ate 200ms,
+            e apenas 500 (os 5% mais lentos) demoraram mais.
+          </p>
+          <ul style="margin-top:.8rem">
+            <li>
+              <strong>Avg (Media)</strong> — soma de todos os tempos dividida pelo total de requisicoes.
+              Facil de entender, mas distorcida por picos extremos: uma unica requisicao que travou por 10s
+              puxa a media pra cima mesmo que todas as outras tenham sido rapidas.
+            </li>
+            <li>
+              <strong>Median (Mediana = P50)</strong> — a requisicao exatamente no meio da fila ordenada.
+              Metade foi mais rapida, metade foi mais lenta. Nao e afetada por outliers, por isso representa
+              melhor a experiencia do usuario tipico do que a media.
+            </li>
+            <li>
+              <strong>P90 (Percentil 90)</strong> — 90% das requisicoes responderam abaixo desse valor.
+              Captura casos lentos mas descarta os 10% mais extremos, que podem ser anomalias pontuais.
+            </li>
+            <li>
+              <strong>P95 (Percentil 95)</strong> — 95% das requisicoes responderam abaixo desse valor.
+              E a metrica padrao em SLAs (acordos de nivel de servico) por equilibrar representatividade
+              e robustez: ainda ignora os 5% de casos mais extremos, mas e mais exigente que o P90.
+              Valores abaixo de 200ms sao considerados rapidos para o usuario final.
+            </li>
+          </ul>
+        </div>
+        <div class="gl-block">
+          <h3>Os 5 Cenarios de Teste</h3>
+          <ul>
+            <li>
+              <strong>Carga (Load)</strong> — 100 VUs por 2 minutos, enviando dados ao banco (POST).
+              Simula o uso normal e estavel do sistema. E o cenario mais proximo do dia a dia real.
+            </li>
+            <li>
+              <strong>Estresse (Stress)</strong> — comeca com 100 VUs e aumenta progressivamente ate 1000 VUs em 4 minutos.
+              Testa o limite do servidor: ate onde ele aguenta antes de degradar ou travar?
+            </li>
+            <li>
+              <strong>Pico (Spike)</strong> — salta de 10 para 1500 VUs em poucos segundos.
+              Simula um evento repentino (ex: um post viral, uma promocao relampago). O servidor precisa absorver
+              a carga imediatamente, sem tempo para se preparar.
+            </li>
+            <li>
+              <strong>Leitura (Read)</strong> — 100 VUs por 2 minutos buscando dados (GET).
+              Testa a performance de consultas no banco de dados, que retornam listas paginadas de registros.
+            </li>
+            <li>
+              <strong>Agregacao (Average)</strong> — 80 VUs por 2 minutos fazendo consultas de media (GET).
+              Testa queries mais pesadas que calculam estatisticas agregadas (media, contagem) sobre grandes volumes de dados.
+            </li>
+          </ul>
+        </div>
+        <div class="gl-block">
+          <h3>O que sao RAM, CPU e Threads no contexto do servidor?</h3>
+          <ul>
+            <li>
+              <strong>RAM (Memoria) em MB</strong> — quantidade de memoria que o processo do servidor ocupou
+              durante os testes. Frameworks com runtime pesado (ex: JVM do Spring Boot) partem de um baseline
+              alto mesmo sem carga. Menor consumo significa que o servidor e mais leve e deixa mais memoria
+              disponivel para outros processos ou instancias.
+            </li>
+            <li>
+              <strong>CPU %</strong> — percentual do processador consumido pelo processo do servidor.
+              Um valor alto indica que o framework e intensivo em computacao; um valor baixo pode significar
+              eficiencia ou que o gargalo estava em outro lugar (ex: banco de dados). Medido a cada 3 segundos
+              durante toda a execucao dos testes.
+            </li>
+            <li>
+              <strong>Threads</strong> — numero de threads que o processo manteve ativo simultaneamente.
+              O Spring Boot usa um modelo de <em>thread-per-request</em> (uma thread por requisicao), por isso
+              tem centenas de threads. O NestJS (Node.js) e o FastAPI (asyncio) usam um event loop com poucas
+              threads, tratando multiplas requisicoes de forma assincrona num numero muito menor de threads.
+              Mais threads nao e necessariamente melhor — depende da arquitetura do framework.
+            </li>
+          </ul>
+        </div>
+        <div class="gl-block">
+          <h3>Nota sobre o FastAPI no teste de Pico</h3>
+          <p>
+            O FastAPI apresentou <strong>89% de erros</strong> no teste de Pico (1500 VUs) por uma limitacao
+            de infraestrutura no Windows: o sistema operacional esgota a fila de conexoes TCP antes mesmo que
+            o servidor consiga receber as requisicoes. Isso <em>nao e uma falha do FastAPI como framework</em>,
+            mas sim do ambiente de teste (Windows + servidor unico sem proxy reverso).
+            Por isso, o teste de Pico do FastAPI foi <strong>excluido do placar final</strong>.
+            Em producao real (Linux + nginx), este problema nao ocorre.
+          </p>
+        </div>
+        <div class="gl-block">
+          <h3>Duracao Total dos Testes (tempo medido em execucao real)</h3>
+          <p>Cada framework executou 5 cenarios com 3 amostras cada (exceto FastAPI, que pulou o Pico):</p>
+          <table style="margin-top:.6rem;border-collapse:collapse;width:100%;font-size:.875rem">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:.4rem .8rem;background:#f1f5f9;color:#475569;border-bottom:2px solid #e2e8f0">Framework</th>
+                <th style="text-align:left;padding:.4rem .8rem;background:#f1f5f9;color:#475569;border-bottom:2px solid #e2e8f0">Testes executados</th>
+                <th style="text-align:left;padding:.4rem .8rem;background:#f1f5f9;color:#475569;border-bottom:2px solid #e2e8f0">Duracao total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:.4rem .8rem;border-bottom:1px solid #f1f5f9"><span class="badge" style="background:#6db33f">Spring Boot</span></td>
+                <td style="padding:.4rem .8rem;border-bottom:1px solid #f1f5f9">5 cenarios x 3 amostras</td>
+                <td style="padding:.4rem .8rem;border-bottom:1px solid #f1f5f9"><strong>37.7 min</strong></td>
+              </tr>
+              <tr>
+                <td style="padding:.4rem .8rem;border-bottom:1px solid #f1f5f9"><span class="badge" style="background:#e0245e">NestJS</span></td>
+                <td style="padding:.4rem .8rem;border-bottom:1px solid #f1f5f9">5 cenarios x 3 amostras</td>
+                <td style="padding:.4rem .8rem;border-bottom:1px solid #f1f5f9"><strong>37.7 min</strong></td>
+              </tr>
+              <tr>
+                <td style="padding:.4rem .8rem"><span class="badge" style="background:#009688">FastAPI</span></td>
+                <td style="padding:.4rem .8rem">4 cenarios x 3 amostras (sem Pico)</td>
+                <td style="padding:.4rem .8rem"><strong>33.6 min</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="margin-top:.6rem;font-size:.8rem;color:#94a3b8">Media entre os tres frameworks (considerando Spring e NestJS): <strong>~36.3 min</strong> por framework.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabelas detalhadas -->
+    
+    <div class="card">
+      <h2>Carga — POST 100 VUs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Framework</th><th>Avg</th><th>Median</th><th>P90</th><th>P95 (±std)</th><th>Max</th><th>RPS</th><th>Erro%</th></tr>
+          </thead>
+          <tbody>
+      <tr class="winner-row">
+        <td><span class="badge" style="background:#e0245e">NestJS</span> <span class="winner-tag" style="border-color:#e0245e;color:#e0245e">vencedor</span> <small>(n=3)</small></td>
+        <td>8ms</td>
+        <td>6ms</td>
+        <td>14ms</td>
+        <td class="best"><span class="win-badge">1°</span> 20ms <small>±1.4</small></td>
+        <td>106ms</td>
+        <td class="best"><span class="win-badge">1°</span> 691.9</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#6db33f">Spring Boot</span> <small>(n=3)</small></td>
+        <td>11ms</td>
+        <td>7ms</td>
+        <td>21ms</td>
+        <td>29ms <small>±21.9</small></td>
+        <td>242ms</td>
+        <td>673.56</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#009688">FastAPI</span> <small>(n=3)</small></td>
+        <td>419ms</td>
+        <td>208ms</td>
+        <td>1181ms</td>
+        <td>1361ms <small>±6.9</small></td>
+        <td>1661ms</td>
+        <td>144.76</td>
+        <td class="good">0%</td>
+      </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Estresse — POST 1000 VUs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Framework</th><th>Avg</th><th>Median</th><th>P90</th><th>P95 (±std)</th><th>Max</th><th>RPS</th><th>Erro%</th></tr>
+          </thead>
+          <tbody>
+      <tr class="winner-row">
+        <td><span class="badge" style="background:#6db33f">Spring Boot</span> <span class="winner-tag" style="border-color:#6db33f;color:#6db33f">vencedor</span> <small>(n=3)</small></td>
+        <td>229ms</td>
+        <td>199ms</td>
+        <td>492ms</td>
+        <td class="best"><span class="win-badge">1°</span> 555ms <small>±7.3</small></td>
+        <td>1717ms</td>
+        <td class="best"><span class="win-badge">1°</span> 1434.64</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#e0245e">NestJS</span> <small>(n=3)</small></td>
+        <td>400ms</td>
+        <td>361ms</td>
+        <td>852ms</td>
+        <td>927ms <small>±24.5</small></td>
+        <td>1346ms</td>
+        <td>890.52</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#009688">FastAPI</span> <small>(n=3)</small></td>
+        <td>1299ms</td>
+        <td>930ms</td>
+        <td>2824ms</td>
+        <td>3959ms <small>±301</small></td>
+        <td>17606ms</td>
+        <td>300.48</td>
+        <td class="good">0%</td>
+      </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pico — POST 1500 VUs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Framework</th><th>Avg</th><th>Median</th><th>P90</th><th>P95 (±std)</th><th>Max</th><th>RPS</th><th>Erro%</th></tr>
+          </thead>
+          <tbody>
+      <tr class="winner-row">
+        <td><span class="badge" style="background:#6db33f">Spring Boot</span> <span class="winner-tag" style="border-color:#6db33f;color:#6db33f">vencedor</span> <small>(n=3)</small></td>
+        <td>620ms</td>
+        <td>705ms</td>
+        <td>872ms</td>
+        <td class="best"><span class="win-badge">1°</span> 964ms <small>±50</small></td>
+        <td>2099ms</td>
+        <td class="best"><span class="win-badge">1°</span> 1397.7</td>
+        <td class="good"><span class="win-badge">1°</span> 0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#e0245e">NestJS</span> <small>(n=3)</small></td>
+        <td>1150ms</td>
+        <td>1354ms</td>
+        <td>1503ms</td>
+        <td>1579ms <small>±34.9</small></td>
+        <td>1867ms</td>
+        <td>808.29</td>
+        <td class="good"><span class="win-badge">1°</span> 0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#009688">FastAPI</span> <small style="color:#dc2626">(excluido do placar)</small></td>
+        <td>385ms</td>
+        <td>0ms</td>
+        <td>380ms</td>
+        <td>2565ms</td>
+        <td>26003ms</td>
+        <td>2143.18</td>
+        <td class="bad">88.995%</td>
+      </tr><tr><td colspan="8" class="rejected-note">
+          <strong>Resumo:</strong> 88.995% das requisicoes foram <strong>recusadas no nivel TCP</strong> — o kernel do Windows
+          esgotou a fila de conexoes (backlog) antes do servidor processar. As 114.595 requisicoes
+          rejeitadas receberam TCP RST imediatamente, sem nem chegar ao FastAPI.
+          Isso nao e falha do framework, e uma limitacao de infraestrutura (Windows + uvicorn sem proxy reverso).
+          Resultado excluido do placar.
+         </td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Leitura — GET 100 VUs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Framework</th><th>Avg</th><th>Median</th><th>P90</th><th>P95 (±std)</th><th>Max</th><th>RPS</th><th>Erro%</th></tr>
+          </thead>
+          <tbody>
+      <tr class="winner-row">
+        <td><span class="badge" style="background:#009688">FastAPI</span> <span class="winner-tag" style="border-color:#009688;color:#009688">vencedor</span> <small>(n=3)</small></td>
+        <td>1273ms</td>
+        <td>1542ms</td>
+        <td>1775ms</td>
+        <td class="best"><span class="win-badge">1°</span> 1870ms <small>±19</small></td>
+        <td>3946ms</td>
+        <td class="best"><span class="win-badge">1°</span> 54.84</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#6db33f">Spring Boot</span> <small>(n=3)</small></td>
+        <td>2222ms</td>
+        <td>2765ms</td>
+        <td>3089ms</td>
+        <td>3184ms <small>±146.2</small></td>
+        <td>6105ms</td>
+        <td>32.32</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#e0245e">NestJS</span> <small>(n=3)</small></td>
+        <td>2493ms</td>
+        <td>3152ms</td>
+        <td>3327ms</td>
+        <td>3374ms <small>±6.9</small></td>
+        <td>6128ms</td>
+        <td>29.18</td>
+        <td class="good">0%</td>
+      </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Agregacao — GET 80 VUs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Framework</th><th>Avg</th><th>Median</th><th>P90</th><th>P95 (±std)</th><th>Max</th><th>RPS</th><th>Erro%</th></tr>
+          </thead>
+          <tbody>
+      <tr class="winner-row">
+        <td><span class="badge" style="background:#009688">FastAPI</span> <span class="winner-tag" style="border-color:#009688;color:#009688">vencedor</span> <small>(n=3)</small></td>
+        <td>294ms</td>
+        <td>126ms</td>
+        <td>865ms</td>
+        <td>1123ms <small>±51.3</small></td>
+        <td>1526ms</td>
+        <td class="best"><span class="win-badge">1°</span> 121.38</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#e0245e">NestJS</span> <small>(n=3)</small></td>
+        <td>653ms</td>
+        <td>807ms</td>
+        <td>931ms</td>
+        <td class="best"><span class="win-badge">1°</span> 964ms <small>±14.2</small></td>
+        <td>1155ms</td>
+        <td>70.59</td>
+        <td class="good">0%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#6db33f">Spring Boot</span> <small>(n=3)</small></td>
+        <td>1075ms</td>
+        <td>1318ms</td>
+        <td>1524ms</td>
+        <td>1589ms <small>±38.4</small></td>
+        <td>3053ms</td>
+        <td>47.29</td>
+        <td class="good">0%</td>
+      </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <div class="card">
+      <h2>Throughput (RPS) — Resumo Geral</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Framework</th><th>Carga</th><th>Estresse</th><th>Pico</th><th>Leitura</th><th>Agregacao</th></tr></thead>
+          <tbody><tr><td><span class="badge" style="background:#e0245e">NestJS</span></td><td class="best"><span class="win-badge">1°</span> 691.9</td><td>890.52</td><td>808.29</td><td>29.18</td><td>70.59</td></tr><tr><td><span class="badge" style="background:#009688">FastAPI</span></td><td>144.76</td><td>300.48</td><td class="best"><span class="win-badge">1°</span> 2143.18</td><td class="best"><span class="win-badge">1°</span> 54.84</td><td class="best"><span class="win-badge">1°</span> 121.38</td></tr><tr class="winner-row"><td><span class="badge" style="background:#6db33f">Spring Boot</span> <span class="winner-tag" style="border-color:#6db33f;color:#6db33f">vencedor</span></td><td>673.56</td><td class="best"><span class="win-badge">1°</span> 1434.64</td><td>1397.7</td><td>32.32</td><td>47.29</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <div class="card">
+      <h2>Latência P95 (ms) — Resumo Geral</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Framework</th><th>Carga</th><th>Estresse</th><th>Pico</th><th>Leitura</th><th>Agregacao</th></tr></thead>
+          <tbody><tr><td><span class="badge" style="background:#e0245e">NestJS</span></td><td class="best"><span class="win-badge">1°</span> 20ms <small>±1.4</small></td><td>927ms <small>±24.5</small></td><td>1579ms <small>±34.9</small></td><td>3374ms <small>±6.9</small></td><td class="best"><span class="win-badge">1°</span> 964ms <small>±14.2</small></td></tr><tr><td><span class="badge" style="background:#009688">FastAPI</span></td><td>1361ms <small>±6.9</small></td><td>3959ms <small>±301</small></td><td>2565ms</td><td class="best"><span class="win-badge">1°</span> 1870ms <small>±19</small></td><td>1123ms <small>±51.3</small></td></tr><tr class="winner-row"><td><span class="badge" style="background:#6db33f">Spring Boot</span> <span class="winner-tag" style="border-color:#6db33f;color:#6db33f">vencedor</span></td><td>29ms <small>±21.9</small></td><td class="best"><span class="win-badge">1°</span> 555ms <small>±7.3</small></td><td class="best"><span class="win-badge">1°</span> 964ms <small>±50</small></td><td>3184ms <small>±146.2</small></td><td>1589ms <small>±38.4</small></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <div class="card">
+      <h2>Taxa de Erro (%) — Resumo Geral</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Framework</th><th>Carga</th><th>Estresse</th><th>Pico</th><th>Leitura</th><th>Agregacao</th></tr></thead>
+          <tbody><tr><td><span class="badge" style="background:#e0245e">NestJS</span></td><td class="good">0%</td><td class="good">0%</td><td class="good">0%</td><td class="good">0%</td><td class="good">0%</td></tr><tr><td><span class="badge" style="background:#009688">FastAPI</span></td><td class="good">0%</td><td class="good">0%</td><td class="bad">88.995%</td><td class="good">0%</td><td class="good">0%</td></tr><tr class="winner-row"><td><span class="badge" style="background:#6db33f">Spring Boot</span> <span class="winner-tag" style="border-color:#6db33f;color:#6db33f">vencedor</span></td><td class="good">0%</td><td class="good">0%</td><td class="good">0%</td><td class="good">0%</td><td class="good">0%</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <div class="card">
+      <h2>Consumo de Recursos</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Framework</th><th>CPU Med%</th><th>CPU Max%</th><th>RAM Med</th><th>RAM Max</th><th>Threads Med</th></tr></thead>
+          <tbody><tr class="winner-row">
+      <td><span class="badge" style="background:#e0245e">NestJS</span> <span class="winner-tag" style="border-color:#e0245e;color:#e0245e">menor CPU</span></td>
+      <td class="best"><span class="win-badge">1°</span> 5.6%</td>
+      <td>11%</td>
+      <td>552 MB</td>
+      <td>673.8 MB</td>
+      <td>39</td>
+    </tr><tr class="winner-row">
+      <td><span class="badge" style="background:#009688">FastAPI</span> <span class="winner-tag" style="border-color:#009688;color:#009688">menor RAM</span></td>
+      <td>6.3%</td>
+      <td>8%</td>
+      <td class="best"><span class="win-badge">1°</span> 145 MB</td>
+      <td>208.2 MB</td>
+      <td>7</td>
+    </tr><tr>
+      <td><span class="badge" style="background:#6db33f">Spring Boot</span></td>
+      <td>11.7%</td>
+      <td>29%</td>
+      <td>968.6 MB</td>
+      <td>1083.4 MB</td>
+      <td>348</td>
+    </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#16a34a"></span> melhor valor da linha</span>
+    <span><span class="dot" style="background:#d97706"></span> erro entre 0–5%</span>
+    <span><span class="dot" style="background:#dc2626"></span> erro acima de 5%</span>
+  </div>
+
+  <script>
+    const CD = {"labels":["Carga","Estresse","Pico","Leitura","Agregacao"],"rps":[{"label":"NestJS","data":[691.9,890.52,808.29,29.18,70.59],"backgroundColor":"rgba(224,36,94,0.15)","borderColor":"#e0245e","borderWidth":2},{"label":"FastAPI","data":[144.76,300.48,2143.18,54.84,121.38],"backgroundColor":"rgba(0,150,136,0.15)","borderColor":"#009688","borderWidth":2},{"label":"Spring Boot","data":[673.56,1434.64,1397.7,32.32,47.29],"backgroundColor":"rgba(109,179,63,0.15)","borderColor":"#6db33f","borderWidth":2}],"p95":[{"label":"NestJS","data":[20,927,1579,3374,964],"backgroundColor":"rgba(224,36,94,0.15)","borderColor":"#e0245e","borderWidth":2},{"label":"FastAPI","data":[1361,3959,2565,1870,1123],"backgroundColor":"rgba(0,150,136,0.15)","borderColor":"#009688","borderWidth":2},{"label":"Spring Boot","data":[29,555,964,3184,1589],"backgroundColor":"rgba(109,179,63,0.15)","borderColor":"#6db33f","borderWidth":2}],"error":[{"label":"NestJS","data":[0,0,0,0,0],"backgroundColor":"rgba(224,36,94,0.15)","borderColor":"#e0245e","borderWidth":2},{"label":"FastAPI","data":[0,0,88.995,0,0],"backgroundColor":"rgba(0,150,136,0.15)","borderColor":"#009688","borderWidth":2},{"label":"Spring Boot","data":[0,0,0,0,0],"backgroundColor":"rgba(109,179,63,0.15)","borderColor":"#6db33f","borderWidth":2}],"ram":[{"label":"NestJS","data":[552],"backgroundColor":"rgba(224,36,94,0.15)","borderColor":"#e0245e","borderWidth":2},{"label":"FastAPI","data":[145],"backgroundColor":"rgba(0,150,136,0.15)","borderColor":"#009688","borderWidth":2},{"label":"Spring Boot","data":[968.6],"backgroundColor":"rgba(109,179,63,0.15)","borderColor":"#6db33f","borderWidth":2}],"cpu":[{"label":"NestJS","data":[5.6],"backgroundColor":"rgba(224,36,94,0.15)","borderColor":"#e0245e","borderWidth":2},{"label":"FastAPI","data":[6.3],"backgroundColor":"rgba(0,150,136,0.15)","borderColor":"#009688","borderWidth":2},{"label":"Spring Boot","data":[11.7],"backgroundColor":"rgba(109,179,63,0.15)","borderColor":"#6db33f","borderWidth":2}]};
+    const baseOpts = (title, suffix) => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 }, color: '#334155' } },
+        title:  { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + (ctx.parsed.y ?? ctx.parsed.x) + suffix } }
+      },
+      scales: {
+        x: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b' } },
+        y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b' }, beginAtZero: true }
+      }
+    });
+
+    new Chart(document.getElementById('chartRps'), {
+      type: 'bar',
+      data: { labels: CD.labels, datasets: CD.rps },
+      options: baseOpts('RPS', ' RPS'),
+    });
+
+    new Chart(document.getElementById('chartP95'), {
+      type: 'bar',
+      data: { labels: CD.labels, datasets: CD.p95 },
+      options: baseOpts('P95', 'ms'),
+    });
+
+    new Chart(document.getElementById('chartErr'), {
+      type: 'bar',
+      data: { labels: CD.labels, datasets: CD.error },
+      options: baseOpts('Erro%', '%'),
+    });
+
+    new Chart(document.getElementById('chartRam'), {
+      type: 'bar',
+      data: { labels: ['RAM Média'], datasets: CD.ram },
+      options: { ...baseOpts('RAM', ' MB'), plugins: { ...baseOpts().plugins, legend: { position: 'top', labels: { color: '#334155' } } } },
+    });
+
+    new Chart(document.getElementById('chartCpu'), {
+      type: 'bar',
+      data: { labels: ['CPU Média'], datasets: CD.cpu },
+      options: baseOpts('CPU', '%'),
+    });
+  </script>
+</body>
+</html>

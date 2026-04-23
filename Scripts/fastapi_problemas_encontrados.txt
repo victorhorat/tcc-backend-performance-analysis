@@ -1,0 +1,159 @@
+PROBLEMAS ENCONTRADOS DURANTE OS TESTES DE PERFORMANCE - FastAPI
+=================================================================
+TCC - Comparativo de Frameworks: Spring Boot x FastAPI x NestJS
+Data: Abril de 2026
+
+
+CONTEXTO
+--------
+Durante a execução dos testes de carga com k6 na API FastAPI, foram encontrados
+quatro problemas distintos que exigiram intervenções no código e na configuração
+do servidor. Os problemas estão descritos abaixo em ordem cronológica de ocorrência.
+
+
+PROBLEMA 1 - Erro 422 em todas as requisições POST
+---------------------------------------------------
+Sintoma:
+  O k6 recebia HTTP 422 (Unprocessable Entity) em 100% das requisições de escrita.
+
+Causa:
+  Os scripts k6 enviam o payload em camelCase (sensorId, apiKey), seguindo o
+  padrão adotado pelo Spring Boot e NestJS. Os modelos Pydantic do FastAPI, na
+  implementação original, esperavam snake_case (sensor_id, api_key), rejeitando
+  todos os payloads com erro de validação.
+
+Solução:
+  Adicionados aliases camelCase nos campos dos schemas Pydantic usando
+  Field(..., alias='sensorId') e ConfigDict(populate_by_name=True),
+  permitindo que o FastAPI aceite ambas as convenções de nomenclatura.
+
+
+PROBLEMA 2 - Esgotamento do pool de conexões (QueuePool timeout)
+-----------------------------------------------------------------
+Sintoma:
+  Erros "QueuePool limit of size X overflow X reached, connection timed out"
+  durante o teste de carga (100 VUs simultâneos).
+
+Causa:
+  O pool de conexões padrão do SQLAlchemy (pool_size=5, max_overflow=10)
+  é insuficiente para suportar múltiplas requisições concorrentes. Com 100 VUs
+  ativos, as requisições excediam o limite de 15 conexões disponíveis.
+
+Solução:
+  Aumento do pool de conexões no database.py:
+    pool_size=40, max_overflow=50 (total: 90 conexões)
+  Respeitando o limite padrão do PostgreSQL de 100 conexões simultâneas.
+
+
+PROBLEMA 3 - Crash por limite de file descriptors no Windows
+------------------------------------------------------------
+Sintoma:
+  Erro "ValueError: too many file descriptors in select()" seguido de crash
+  completo da aplicação durante o teste de stress.
+
+Causa:
+  O Windows possui um limite histórico de ~512 file descriptors para a
+  chamada de sistema select(). O uvicorn sendo iniciado com as flags
+  --reload (cria processo de observação de arquivos) e --workers 4
+  (cria múltiplos processos) multiplicava o consumo de file descriptors,
+  atingindo o limite rapidamente sob carga alta.
+
+Solução:
+  Remover as flags --reload e --workers ao iniciar o uvicorn durante os testes:
+    uvicorn main:app --host 0.0.0.0 --port 8082
+  Essas flags são úteis em desenvolvimento mas prejudicam testes de performance.
+
+
+PROBLEMA 4 - Crash por esgotamento do thread pool (problema principal)
+-----------------------------------------------------------------------
+Sintoma:
+  Erros "anyio.WouldBlock" e "asyncio.CancelledError" em cascata durante o
+  teste de stress (1000 VUs), causando o crash da aplicação e conexões recusadas.
+
+Causa (raiz):
+  O FastAPI executa funções de endpoint definidas com def (síncronas) em um
+  thread pool gerenciado pelo anyio (capacidade padrão: 40 threads). O SQLAlchemy
+  na implementação original era inteiramente síncrono: cada requisição ocupava
+  uma thread enquanto aguardava resposta do banco de dados.
+
+  Com 1000 VUs simultâneos no teste de stress, o thread pool se esgotava
+  completamente. Novas requisições aguardavam uma thread disponível, atingiam
+  o timeout interno e eram canceladas com CancelledError. Sob carga suficiente,
+  isso derrubava a aplicação.
+
+  Este é o anti-padrão clássico de usar SQLAlchemy síncrono com um framework
+  assíncrono: o FastAPI foi construído sobre o Starlette e o asyncio, mas a
+  implementação original não aproveitava esse modelo.
+
+Solução:
+  Migração completa para SQLAlchemy assíncrono com o driver asyncpg:
+
+  1. database.py: substituição de create_engine por create_async_engine com
+     a URL postgresql+asyncpg://, e SessionLocal por AsyncSessionLocal
+     usando a classe AsyncSession.
+
+  2. crud.py: todas as funções convertidas de def para async def, com
+     await em todas as operações de banco. Queries migradas para o estilo
+     SQLAlchemy 2.0 (select() + execute() + scalars()).
+
+  3. main.py: todos os endpoints convertidos para async def, dependência
+     get_db convertida para função assíncrona usando async with.
+
+  Com async/await, as operações de banco de dados não bloqueiam threads.
+  O FastAPI gerencia as requisições concorrentes diretamente no event loop
+  do asyncio, sem depender de um pool de threads para I/O. Isso elimina o
+  gargalo que causava o crash sob alta carga.
+
+  Pacote adicional instalado: asyncpg (driver PostgreSQL assíncrono para Python)
+
+
+IMPACTO NOS TESTES
+------------------
+- Testes de load (100 VUs): concluídos sem erros após as correções.
+- Testes de stress (1000 VUs) e spike (1500 VUs): estáveis após a migração
+  para SQLAlchemy assíncrono. Antes da migração, a aplicação crashava
+  consistentemente durante o teste de stress.
+- Os resultados obtidos após as correções refletem o comportamento real do
+  FastAPI quando utilizado com seu modelo assíncrono nativo, que é a forma
+  correta e recomendada de uso do framework.
+
+
+DECISÃO: SPIKE TEST EXCLUÍDO DOS RESULTADOS FINAIS DO FASTAPI
+--------------------------------------------------------------
+O teste de spike (10 → 1500 VUs em segundos) foi executado mas apresentou
+taxa de falha de ~89% devido a conexões recusadas no nível TCP, não por
+falha da aplicação. O uvicorn (servidor ASGI utilizado pelo FastAPI) opera
+como processo único e depende da fila de conexões TCP do sistema operacional
+(backlog). No Windows, sob um burst de 1500 VUs simultâneos, essa fila
+esgota e o kernel começa a enviar TCP RST para novas conexões antes mesmo
+de o uvicorn processá-las.
+
+Tentativas de mitigação realizadas:
+  - Flag --backlog 4096 no uvicorn: insuficiente para 1500 VUs simultâneos
+  - Migração para SQLAlchemy assíncrono (asyncpg): resolveu stress, não spike
+  - Aumento do pool de conexões (90 conexões): não impacta o gargalo TCP
+
+Conclusão: o problema é uma limitação de infraestrutura (Windows + uvicorn
+single-process), não do framework FastAPI em si. Em produção, resolvido com
+nginx como reverse proxy ou múltiplas instâncias. Para fins de comparação
+justa neste TCC, o spike test foi excluído dos resultados do FastAPI, e os
+testes foram re-executados sem ele usando:
+
+  .\run-all-tests.ps1 -Framework fastapi -SkipTests "spike"
+
+Tempo total de execução (4 testes x 3 amostras, sem spike): 33.6 minutos
+
+O Spring Boot lida com o spike nativamente pois o Tomcat gerencia um pool
+de threads com accept queue dedicada, mais eficiente que o backlog TCP
+padrão do uvicorn no Windows.
+
+
+OBSERVAÇÃO PARA O TCC
+---------------------
+A necessidade dessas correções é em si um resultado relevante da pesquisa.
+Ela demonstra que a configuração padrão do FastAPI com SQLAlchemy síncrono
+não é adequada para cenários de alta concorrência, e que o desenvolvedor
+precisa conhecer o modelo async/await do Python para extrair a performance
+real do framework. O Spring Boot, por comparação, opera corretamente em sua
+configuração padrão (com thread pool gerenciado automaticamente pelo Tomcat),
+exigindo menos conhecimento especializado para atingir boa performance.
